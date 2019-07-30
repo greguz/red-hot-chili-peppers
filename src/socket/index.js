@@ -1,29 +1,10 @@
 import makePlugin from 'fastify-plugin'
 import _ from 'lodash'
 
-import cmdAitHumidity from './commands/air-humidity'
-import cmdAirTemperature from './commands/air-temperature'
 import cmdAuth from './commands/auth'
-import cmdBattery from './commands/battery'
-import cmdLight from './commands/light'
-import cmdSoilMoisture from './commands/soil-moisture'
-import cmdSoilTemperature from './commands/soil-temperature'
+import cmdSensors from './commands/sensors'
 
-// 0x71 battery %
-// 0x72 light lx
-// 0x73 airHumidity %
-// 0x74 airTemperature °C
-// 0x75 soilMoisture %
-// 0x76 soilTemperature °C
-const COMMANDS = [
-  cmdAitHumidity,
-  cmdAirTemperature,
-  cmdAuth,
-  cmdBattery,
-  cmdLight,
-  cmdSoilMoisture,
-  cmdSoilTemperature
-]
+const COMMANDS = [cmdAuth, cmdSensors]
 
 function parsePacket(data) {
   // Ensure buffer type

@@ -183,7 +183,35 @@ void handleSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 /**
- * Read current soil moisture level (percentage 0-100)
+ *
+ */
+uint8_t readBattery() {
+  return 66;
+}
+
+/**
+ *
+ */
+uint32_t readLight() {
+  return 22135;
+}
+
+/**
+ *
+ */
+uint8_t readAirHumidity() {
+  return 50;
+}
+
+/**
+ *
+ */
+int8_t readAirTemperature() {
+  return 26;
+}
+
+/**
+ *
  */
 uint8_t readSoilMoisture() {
   uint16_t val = ads.readADC_SingleEnded(ADS_MOISTURE_PIN);
@@ -208,69 +236,33 @@ uint8_t readSoilMoisture() {
 /**
  *
  */
-void sensorBattery() {
-  byte payload[6] = { 0x5a, 0xa5, 0x01, 0x71, 0x01, 0x00 };
-  socket.sendBIN(payload, 6);
-}
-
-/**
- *
- */
-void sensorLight() {
-  byte payload[9] = { 0x5a, 0xa5, 0x01, 0x72, 0x04, 0x00, 0x00, 0x00, 0x00 };
-  socket.sendBIN(payload, 9);
-}
-
-/**
- *
- */
-void sensorAirHumidity() {
-  byte payload[6] = { 0x5a, 0xa5, 0x01, 0x73, 0x01, 0x00 };
-  socket.sendBIN(payload, 6);
-}
-
-/**
- *
- */
-void sensorAirTemperature() {
-  byte payload[6] = { 0x5a, 0xa5, 0x01, 0x74, 0x01, 0x00 };
-  socket.sendBIN(payload, 6);
-}
-
-/**
- *
- */
-void sensorSoilMoisture() {
-  uint8_t value = readSoilMoisture();
-  byte payload[6] = { 0x5a, 0xa5, 0x01, 0x75, 0x01, value };
-  socket.sendBIN(payload, 6);
-}
-
-/**
- *
- */
-void sensorSoilTemperature() {
-  byte payload[6] = { 0x5a, 0xa5, 0x01, 0x76, 0x01, 0x00 };
-  socket.sendBIN(payload, 6);
+int8_t readSoilTemperature() {
+  return 18;
 }
 
 /**
  * Device routine
  */
 void routine() {
-  // Sensor readings
-  sensorBattery();
-  socket.loop();
-  sensorLight();
-  socket.loop();
-  sensorAirHumidity();
-  socket.loop();
-  sensorAirTemperature();
-  socket.loop();
-  sensorSoilMoisture();
-  socket.loop();
-  sensorSoilTemperature();
-  socket.loop();
+  uint8_t vBattery = readBattery();
+  uint32_t vLight = readLight();
+  uint8_t  vAirHumidity = readAirHumidity();
+  int8_t vAirTemperature = readAirTemperature();
+  uint8_t  vSoilMoisture = readSoilMoisture();
+  int8_t vSoilTemperature = readSoilTemperature();
+
+  byte payload[14] = { 0x5a, 0xa5, 0x01, 0x70, 9 };
+  payload[5] = vBattery;
+  payload[6] = vLight >> 24; // BE
+  payload[7] = vLight >> 16;
+  payload[8] = vLight >> 8;
+  payload[9] = vLight >> 0;
+  payload[10] = vAirHumidity;
+  payload[11] = vAirTemperature;
+  payload[12] = vSoilMoisture;
+  payload[13] = vSoilTemperature;
+
+  socket.sendBIN(payload, 14);
 
   // Deep sleep mode
   Serial.println("Good night");
