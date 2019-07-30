@@ -28,7 +28,7 @@ function createPacket(mac, greetCode, token) {
 function findClient(server, greetCode) {
   let result = null
   server.clients.forEach(client => {
-    if (!client.device && client.greetCode === greetCode) {
+    if (!client.deviceId && client.greetCode === greetCode) {
       result = client
     }
   })
