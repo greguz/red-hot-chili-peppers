@@ -50,17 +50,16 @@ async function handler(request, reply) {
   client.send(createPacket(client.mac, greetCode, token))
 
   // Create device inside DB
-  const device = await this.db.devices.create({
+  const { insertedId } = await this.db.devices.insertOne({
     userId: request.user._id.toHexString(),
     mac: client.mac,
     token: token.toString('hex'),
     name: request.body.name || client.mac.toUpperCase(),
-    heartbeat: new Date(),
-    readings: {}
+    heartbeat: new Date()
   })
 
-  // Enable advanced messages
-  client.device = device
+  // Authenticate socket as device
+  client.deviceId = insertedId
 
   reply.send(device)
 }

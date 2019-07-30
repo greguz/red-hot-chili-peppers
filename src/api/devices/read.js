@@ -2,11 +2,15 @@ import { ObjectId } from 'mongodb'
 
 import deviceSchema from './schema'
 
-async function handler(request) {
-  return this.db.devices.read({
+async function handler(request, reply) {
+  const device = await this.db.devices.findOne({
     _id: new ObjectId(request.params._id),
     userId: request.user._id.toHexString()
   })
+  if (!device) {
+    throw new Error('Not found')
+  }
+  reply.send(device)
 }
 
 export default {

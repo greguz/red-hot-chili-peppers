@@ -52,10 +52,10 @@ async function messageHandler(socket, data) {
   ) {
     throw new Error('Invalid command length')
   }
-  if (command.authenticated === false && !!socket.device) {
+  if (command.authenticated === false && !!socket.deviceId) {
     throw new Error('Authenticated')
   }
-  if (command.authenticated === true && !socket.device) {
+  if (command.authenticated === true && !socket.deviceId) {
     throw new Error('Not authenticated')
   }
   await command.handler.call(this, socket, packet)

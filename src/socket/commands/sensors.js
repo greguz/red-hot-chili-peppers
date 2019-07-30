@@ -8,19 +8,20 @@ async function handler(socket, packet) {
   const soilMoisture = packet.body.readUInt8(7)
   const soilTemperature = packet.body.readInt8(8)
 
-  socket.device = await this.db.devices.update(socket.device._id, device => ({
-    ...device,
-    heartbeat: new Date(),
-    readings: {
-      ...device.readings,
-      battery,
-      light,
-      airHumidity,
-      airTemperature,
-      soilMoisture,
-      soilTemperature
+  await this.db.devices.updateOne(
+    { _id: socket.deviceId },
+    {
+      $set: {
+        heartbeat: new Date(),
+        'readings.battery': battery,
+        'readings.light': light,
+        'readings.airHumidity': airHumidity,
+        'readings.airTemperature': airTemperature,
+        'readings.soilMoisture': soilMoisture,
+        'readings.soilTemperature': soilTemperature
+      }
     }
-  }))
+  )
 
   let text =
     `Battery: ${battery} %` +

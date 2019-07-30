@@ -29,6 +29,27 @@ function setHeartbeat(device) {
   }
 }
 
+async function readDeviceId(db, mac, token) {
+  const { value } = await db.devices.findOneAndUpdate(
+    {
+      mac,
+      token
+    },
+    {
+      $set: {
+        heartbeat: new Date()
+      }
+    },
+    {
+      projection: {
+        _id: 1
+      }
+    }
+  )
+
+  return value ? value._id : null
+}
+
 async function handler(socket, packet) {
   const mac = readMAC(packet.body, 0)
   const greetCode = readGreetCode(packet.body, 6)
@@ -36,15 +57,13 @@ async function handler(socket, packet) {
 
   socket.mac = mac
   socket.greetCode = greetCode
-  socket.device = await this.db.devices.update({ mac, token }, setHeartbeat, {
-    relax: true
-  })
+  socket.deviceId = await readDeviceId(this.db, mac, token)
 
   console.log(mac)
   console.log(greetCode)
-  console.log(socket.device)
+  console.log(socket.deviceId)
 
-  if (socket.device) {
+  if (socket.deviceId) {
     socket.send(Buffer.from([0x5a, 0xa5, 0x01, 0xa1, 0x00]))
   }
 }
