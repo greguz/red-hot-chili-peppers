@@ -22,13 +22,6 @@ function readToken(buffer, offset) {
   return buffer.subarray(offset, offset + 32).toString('hex')
 }
 
-function setHeartbeat(device) {
-  return {
-    ...device,
-    heartbeat: new Date()
-  }
-}
-
 async function readDeviceId(db, mac, token) {
   const { value } = await db.devices.findOneAndUpdate(
     {

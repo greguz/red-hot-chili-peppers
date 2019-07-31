@@ -23,7 +23,7 @@ async function handler(socket, packet) {
     }
   )
 
-  let text =
+  const text =
     `Battery: ${battery} %` +
     `\nLight: ${light} lx` +
     `\nAir humidity: ${airHumidity} %` +

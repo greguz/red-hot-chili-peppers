@@ -61,7 +61,7 @@ async function handler(request, reply) {
   // Authenticate socket as device
   client.deviceId = insertedId
 
-  reply.send(device)
+  reply.send({ _id: insertedId })
 }
 
 export default {
