@@ -1,8 +1,7 @@
-import { ObjectId } from 'mongodb'
-
 import deviceSchema from './schema'
 
 async function handler(request, reply) {
+  const { ObjectId } = this.mongo
   const device = await this.db.devices.findOne({
     _id: new ObjectId(request.params._id),
     userId: request.user._id.toHexString()
