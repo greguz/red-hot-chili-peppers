@@ -4,6 +4,7 @@ import fastify from 'fastify'
 import helmet from 'fastify-helmet'
 import mongodb from 'fastify-mongodb'
 import noAdditionalProperties from 'fastify-no-additional-properties'
+import noFavicon from 'fastify-no-icon'
 
 import db from './plugins/db'
 import session from './plugins/session'
@@ -21,6 +22,8 @@ app.register(noAdditionalProperties)
 app.register(helmet, {
   // https://github.com/fastify/fastify-helmet#how-it-works
 })
+
+app.register(noFavicon)
 
 app.register(mongodb, {
   forceClose: true,
