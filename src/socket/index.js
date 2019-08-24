@@ -1,10 +1,7 @@
 import makePlugin from 'fastify-plugin'
 import _ from 'lodash'
 
-import cmdAuth from './commands/auth'
-import cmdSensors from './commands/sensors'
-
-const COMMANDS = [cmdAuth, cmdSensors]
+import commands from './commands'
 
 function parsePacket(data) {
   // Ensure buffer type
@@ -42,7 +39,7 @@ function parsePacket(data) {
 
 async function messageHandler(socket, data) {
   const packet = parsePacket(data)
-  const command = COMMANDS.find(item => item.command === packet.command)
+  const command = commands.find(item => item.command === packet.command)
   if (!command) {
     throw new Error('Unknown command')
   }
