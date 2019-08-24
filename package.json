@@ -5,9 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "lint:0": "eslint --fix src",
-    "lint:1": "prettier --write src/**/*.js",
-    "lint": "run-s lint:*",
+    "lint": "eslint src",
     "test": "npm run lint",
     "start": "node --require dotenv/config index.js",
     "watch": "nodemon --require dotenv/config --watch src --ext js --delay 2 index.js"
@@ -30,14 +28,15 @@
   "devDependencies": {
     "dotenv": "^8.1.0",
     "eslint": "^6.2.2",
+    "eslint-config-prettier": "^6.1.0",
     "eslint-config-standard": "^14.0.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "husky": "^3.0.4",
     "nodemon": "^1.19.1",
-    "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2"
   }
 }
