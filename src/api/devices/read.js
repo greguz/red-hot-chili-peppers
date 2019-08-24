@@ -4,7 +4,7 @@ async function handler(request, reply) {
   const { ObjectId } = this.mongo
   const device = await this.db.devices.findOne({
     _id: new ObjectId(request.params._id),
-    userId: request.user._id.toHexString()
+    userId: request.userId
   })
   if (!device) {
     throw new Error('Not found')

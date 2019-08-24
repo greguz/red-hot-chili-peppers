@@ -51,7 +51,7 @@ async function handler(request, reply) {
 
   // Create device inside DB
   const { insertedId } = await this.db.devices.insertOne({
-    userId: request.user._id.toHexString(),
+    userId: request.userId,
     mac: client.mac,
     token: token.toString('hex'),
     name: request.body.name || client.mac.toUpperCase(),
