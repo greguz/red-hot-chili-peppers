@@ -36,7 +36,7 @@ app.register(db)
 app.register(session)
 
 app.register(api, {
-  prefix: `/api/v1`
+  prefix: '/api/v1'
 })
 
 app.register(ws)
