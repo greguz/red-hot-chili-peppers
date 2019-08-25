@@ -5,6 +5,7 @@ import helmet from 'fastify-helmet'
 import mongodb from 'fastify-mongodb'
 import noAdditionalProperties from 'fastify-no-additional-properties'
 import noFavicon from 'fastify-no-icon'
+import cookies from 'fastify-cookie'
 
 import db from './plugins/db'
 import session from './plugins/session'
@@ -32,6 +33,8 @@ app.register(mongodb, {
 })
 
 app.register(db)
+
+app.register(cookies)
 
 app.register(session)
 
