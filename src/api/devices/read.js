@@ -16,6 +16,10 @@ export default {
   method: 'GET',
   url: '/:_id',
   handler,
+  config: {
+    authenticated: true,
+    authorizationLevel: 'default'
+  },
   schema: {
     params: {
       type: 'object',

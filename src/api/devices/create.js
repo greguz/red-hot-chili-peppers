@@ -68,6 +68,10 @@ export default {
   method: 'POST',
   url: '/',
   handler,
+  config: {
+    authenticated: true,
+    authorizationLevel: 'default'
+  },
   schema: {
     body: {
       type: 'object',
@@ -77,7 +81,8 @@ export default {
           pattern: '^[a-f0-9]{4}$'
         },
         name: {
-          type: 'string'
+          type: 'string',
+          maxLength: 50
         }
       },
       required: ['code']
