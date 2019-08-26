@@ -15,10 +15,10 @@ An overcomplicated method to grow some chili peppers
 
 You have to provide some env variables:
 
-0. **MONGO_URI** - MongoDB connection string
-1. **MONGO_DB** - DB to use
-1. TELEGRAM_TOKEN - Telegram bot token (optional)
-1. TELEGRAM_CHAT - Telegram chat ID (optional)
+1. **MONGO_URI** - MongoDB connection string
+2. **MONGO_DATABASE** - Database name to use
+3. TELEGRAM_TOKEN - Telegram bot token (optional)
+4. TELEGRAM_CHAT - Telegram chat ID (optional)
 
 You can create a `.env` file inside this directory.
 
