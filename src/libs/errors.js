@@ -11,18 +11,24 @@ export default ServerError
 
 export class BadRequestError extends ServerError {
   constructor(message, details) {
-    super(message, 400, details)
+    super(message || 'Bad Request', 400, details)
   }
 }
 
 export class UnauthorizedError extends ServerError {
   constructor(message, details) {
-    super(message, 401, details)
+    super(message || 'Unauthorized', 401, details)
   }
 }
 
 export class ForbiddenError extends ServerError {
   constructor(message, details) {
-    super(message, 403, details)
+    super(message || 'Forbidden', 403, details)
+  }
+}
+
+export class NotFoundError extends ServerError {
+  constructor(message, details) {
+    super(message || 'Not Found', 404, details)
   }
 }
