@@ -8,6 +8,7 @@ import noFavicon from 'fastify-no-icon'
 import cookies from 'fastify-cookie'
 
 import db from './plugins/db'
+import errorHandler from './plugins/errors'
 import session from './plugins/session'
 import ws from './plugins/ws'
 
@@ -18,6 +19,8 @@ const app = fastify({
   ignoreTrailingSlash: true,
   logger: true
 })
+
+app.setErrorHandler(errorHandler)
 
 app.register(noAdditionalProperties)
 
