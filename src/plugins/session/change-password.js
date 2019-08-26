@@ -1,3 +1,5 @@
+import { BadRequestError } from '../../libs/errors'
+
 async function handler(request, reply) {
   const { ObjectId } = this.mongo
   const { userId } = request
@@ -7,7 +9,7 @@ async function handler(request, reply) {
 
   const valid = await this.session.comparePassword(oldPassword, user.password)
   if (!valid) {
-    throw new Error('Wrong password')
+    throw new BadRequestError('Incorrect password')
   }
 
   await this.db.users.updateOne(

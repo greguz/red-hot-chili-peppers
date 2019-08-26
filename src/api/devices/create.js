@@ -1,5 +1,7 @@
 import crypto from 'crypto'
 
+import { AuthorizationLevel } from '../../libs/enums'
+
 import deviceSchema from './schema'
 
 function createPacket(mac, greetCode, token) {
@@ -69,8 +71,7 @@ export default {
   url: '/',
   handler,
   config: {
-    authenticated: true,
-    authorizationLevel: 'default'
+    authorizationLevel: AuthorizationLevel.USER
   },
   schema: {
     body: {

@@ -1,3 +1,6 @@
+import { AuthorizationLevel } from '../../libs/enums'
+import { NotFoundError } from '../../libs/errors'
+
 import deviceSchema from './schema'
 
 async function handler(request, reply) {
@@ -7,7 +10,7 @@ async function handler(request, reply) {
     userId: request.userId
   })
   if (!device) {
-    throw new Error('Not found')
+    throw new NotFoundError('Device not found')
   }
   reply.send(device)
 }
@@ -17,8 +20,7 @@ export default {
   url: '/:_id',
   handler,
   config: {
-    authenticated: true,
-    authorizationLevel: 'default'
+    authorizationLevel: AuthorizationLevel.USER
   },
   schema: {
     params: {

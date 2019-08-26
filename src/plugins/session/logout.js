@@ -1,12 +1,12 @@
 async function handler(request, reply) {
   const { ObjectId } = this.mongo
-  const { userId, userToken } = request
+  const { userId, authenticationToken } = request
 
   await this.db.users.updateOne(
     { _id: new ObjectId(userId) },
     {
       $pull: {
-        sessions: userToken
+        sessions: authenticationToken
       }
     }
   )

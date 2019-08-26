@@ -6,6 +6,9 @@ import routeChangePassword from './change-password'
 import routeLogin from './login'
 import routeLogout from './logout'
 
+import { AuthorizationLevel } from '../../libs/enums'
+import { ForbiddenError, UnauthorizedError } from '../../libs/errors'
+
 const jwtSecret = process.env.JWT_SECRET || 'FirstbornUnicornHardcoreSoftPorn'
 const bcryptSaltRounds = 10
 
@@ -64,28 +67,38 @@ function verifyToken(token) {
   })
 }
 
+function mapAuthorizationLevel(profile = 'ANONYMOUS') {
+  return Object.prototype.hasOwnProperty.call(AuthorizationLevel, profile)
+    ? AuthorizationLevel[profile]
+    : AuthorizationLevel.ANONYMOUS
+}
+
 async function onRequestHook(request, reply) {
   const { ObjectId } = this.mongo
-  request.userToken = readToken(request)
+
+  request.authenticationToken = readToken(request)
+  request.authorizationLevel = AuthorizationLevel.ANONYMOUS
   request.userId = null
 
-  if (request.userToken) {
+  if (request.authenticationToken) {
     try {
-      const userId = await this.session.verifyToken(request.userToken)
+      const userId = await this.session.verifyToken(request.authenticationToken)
       if (userId) {
         const user = await this.db.users.findOne(
           {
             _id: new ObjectId(userId),
-            sessions: request.userToken
+            sessions: request.authenticationToken
           },
           {
             projection: {
-              _id: 1
+              _id: 1,
+              profile: 1
             }
           }
         )
         if (user) {
           request.userId = userId
+          request.authorizationLevel = mapAuthorizationLevel(user.profile)
         }
       }
     } catch (err) {
@@ -95,13 +108,15 @@ async function onRequestHook(request, reply) {
 
   const config = reply.context.config || {}
   if (config.authenticated === true && !request.userId) {
-    throw new Error('Auth required')
-  }
-  if (config.authenticated === false && !!request.userId) {
-    throw new Error('You are authenticated')
+    throw new UnauthorizedError()
   }
 
-  // TODO: apply authorization (config.authorizationLevel)
+  if (
+    typeof config.authorizationLevel === 'number' &&
+    request.authorizationLevel < config.authorizationLevel
+  ) {
+    throw new ForbiddenError()
+  }
 }
 
 function plugin(fastify, options, callback) {
@@ -112,8 +127,9 @@ function plugin(fastify, options, callback) {
     verifyToken
   })
 
+  fastify.decorateRequest('authenticationToken', null)
+  fastify.decorateRequest('authorizationLevel', AuthorizationLevel.ANONYMOUS)
   fastify.decorateRequest('userId', null)
-  fastify.decorateRequest('userToken', null)
 
   fastify.addHook('onRequest', onRequestHook)
 

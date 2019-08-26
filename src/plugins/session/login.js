@@ -1,3 +1,5 @@
+import { BadRequestError } from '../../libs/errors'
+
 async function handler(request, reply) {
   const { username, password } = request.body
 
@@ -11,12 +13,12 @@ async function handler(request, reply) {
     }
   )
   if (!user) {
-    throw new Error('Invalid user')
+    throw new BadRequestError('Invalid credentials')
   }
 
   const valid = await this.session.comparePassword(password, user.password)
   if (!valid) {
-    throw new Error('Invalid password')
+    throw new BadRequestError('Invalid credentials')
   }
 
   const token = await this.session.signToken(user._id.toHexString())
