@@ -15,6 +15,7 @@ import api from './api'
 import socket from './socket'
 
 const app = fastify({
+  ignoreTrailingSlash: true,
   logger: true
 })
 
