@@ -32,3 +32,9 @@ export class NotFoundError extends ServerError {
     super(message || 'Not Found', 404, details)
   }
 }
+
+export class ConflictError extends ServerError {
+  constructor(message, details) {
+    super(message || 'Conflict', 409, details)
+  }
+}
