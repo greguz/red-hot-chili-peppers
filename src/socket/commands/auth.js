@@ -40,7 +40,7 @@ async function readDeviceId(db, mac, token) {
     }
   )
 
-  return value ? value._id : null
+  return value ? value._id.toHexString() : null
 }
 
 async function handler(socket, packet) {

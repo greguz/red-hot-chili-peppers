@@ -1,6 +1,8 @@
 import { sendMessage } from '../telegram'
 
 async function handler(socket, packet) {
+  const { ObjectId } = this.mongo
+
   const battery = packet.body.readUInt8(0)
   const light = packet.body.readUInt32BE(1)
   const airHumidity = packet.body.readUInt8(5)
@@ -9,7 +11,7 @@ async function handler(socket, packet) {
   const soilTemperature = packet.body.readInt8(8)
 
   await this.db.devices.updateOne(
-    { _id: socket.deviceId },
+    { _id: new ObjectId(socket.deviceId) },
     {
       $set: {
         heartbeat: new Date(),

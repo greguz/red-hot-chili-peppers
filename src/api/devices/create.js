@@ -61,9 +61,9 @@ async function handler(request, reply) {
   })
 
   // Authenticate socket as device
-  client.deviceId = insertedId
+  client.deviceId = insertedId.toHexString()
 
-  reply.send({ _id: insertedId })
+  reply.status(201).send({ _id: insertedId })
 }
 
 export default {

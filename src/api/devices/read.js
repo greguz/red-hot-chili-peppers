@@ -6,7 +6,7 @@ import deviceSchema from './schema'
 async function handler(request, reply) {
   const { ObjectId } = this.mongo
   const device = await this.db.devices.findOne({
-    _id: new ObjectId(request.params._id),
+    _id: new ObjectId(request.params.id),
     userId: request.userId
   })
   if (!device) {
@@ -17,7 +17,7 @@ async function handler(request, reply) {
 
 export default {
   method: 'GET',
-  url: '/:_id',
+  url: '/:id',
   handler,
   config: {
     authorizationLevel: AuthorizationLevel.USER
@@ -26,12 +26,12 @@ export default {
     params: {
       type: 'object',
       properties: {
-        _id: {
+        id: {
           type: 'string',
           pattern: '^[a-f0-9]{24}$'
         }
       },
-      required: ['_id']
+      required: ['id']
     },
     response: {
       200: deviceSchema

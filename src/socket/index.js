@@ -1,32 +1,38 @@
 import makePlugin from 'fastify-plugin'
 import _ from 'lodash'
 
+import {
+  NotFoundError,
+  BadRequestError,
+  UnauthorizedError
+} from '../libs/errors'
+
 import commands from './commands'
 
 function parsePacket(data) {
   // Ensure buffer type
   if (!Buffer.isBuffer(data)) {
-    throw new Error('Invalid message')
+    throw new BadRequestError('Invalid message type')
   }
 
   // Min packet size
   if (data.byteLength < 5) {
-    throw new Error('Invalid packet size')
+    throw new BadRequestError('Invalid packet size')
   }
 
   // Validate header consts
   if (data.readUInt8(0) !== 0x5a || data.readUInt8(1) !== 0xa5) {
-    throw new Error('Unexpected header')
+    throw new BadRequestError('Unexpected header')
   }
 
   // Ensure protocol version
   if (data.readUInt8(2) !== 1) {
-    throw new Error('Unsupported protocol version')
+    throw new BadRequestError('Unsupported protocol version')
   }
 
   // Validate body length
   if (data.byteLength !== data.readUInt8(4) + 5) {
-    throw new Error('Malformed packet')
+    throw new BadRequestError('Malformed packet')
   }
 
   return {
@@ -41,19 +47,16 @@ async function messageHandler(socket, data) {
   const packet = parsePacket(data)
   const command = commands.find(item => item.command === packet.command)
   if (!command) {
-    throw new Error('Unknown command')
+    throw new NotFoundError('Unknown command')
   }
   if (
     typeof command.length === 'number' &&
     command.length !== packet.body.length
   ) {
-    throw new Error('Invalid command length')
-  }
-  if (command.authenticated === false && !!socket.deviceId) {
-    throw new Error('Authenticated')
+    throw new BadRequestError('Invalid command length')
   }
   if (command.authenticated === true && !socket.deviceId) {
-    throw new Error('Not authenticated')
+    throw new UnauthorizedError()
   }
   await command.handler.call(this, socket, packet)
 }
