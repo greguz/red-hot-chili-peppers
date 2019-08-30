@@ -24,6 +24,8 @@ function plugin(fastify, _options, callback) {
 
   wss.on('error', err => fastify.log.error(err))
 
+  fastify.decorate('ws', wss)
+
   fastify.addHook('onClose', (_fastify, done) => {
     clearInterval(keepAliveInterval)
     wss.close(done)
