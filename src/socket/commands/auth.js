@@ -63,6 +63,7 @@ async function handler(socket, packet) {
 
 export default {
   authenticated: false,
+  version: 1,
   command: 0xa0,
   length: 40,
   handler
