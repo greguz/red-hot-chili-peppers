@@ -20,23 +20,54 @@ const readingSchema = {
   }
 }
 
+function parseSort(value) {
+  const fields = value ? value.split(',') : []
+
+  return fields.reduce((acc, field) => {
+    let order = 1
+
+    if (/:asc$/.test(field)) {
+      field = field.substring(0, field.length - 4)
+    } else if (/:desc$/.test(field)) {
+      field = field.substring(0, field.length - 5)
+      order = -1
+    }
+
+    return {
+      ...acc,
+      [field]: order
+    }
+  }, {})
+}
+
+function parseProjection(value) {
+  const fields = value ? value.split(',') : []
+  return fields.reduce((acc, field) => ({ ...acc, [field]: 1 }), {})
+}
+
 async function handler(request, reply) {
   const { ObjectId } = this.mongo
 
-  const device = await this.db.devices.findOne({
-    _id: new ObjectId(request.params.id),
-    userId: request.userId,
-    _deleted: {
-      $exists: false
+  const device = await this.db.devices.findOne(
+    {
+      _id: new ObjectId(request.params.id),
+      userId: request.userId,
+      _deleted: {
+        $exists: false
+      }
+    },
+    {
+      projection: {
+        _id: 1
+      }
     }
-  })
+  )
   if (!device) {
     throw new NotFoundError('Device not found')
   }
 
   const page = request.query.page || 1
   const size = request.query.size || 50
-  const fields = request.query.fields ? request.query.fields.split(',') : []
 
   const query = {
     $and: [
@@ -51,7 +82,8 @@ async function handler(request, reply) {
   const options = {
     limit: size,
     skip: size * (page - 1),
-    projection: fields.reduce((acc, field) => ({ ...acc, [field]: 1 }), {})
+    projection: parseProjection(request.query.fields),
+    sort: parseSort(request.query.sort)
   }
 
   const [count, items] = await Promise.all([
@@ -86,6 +118,21 @@ export default {
         }
       },
       required: ['id']
+    },
+    querystring: {
+      type: 'object',
+      properties: {
+        page: {
+          type: 'integer',
+          minimum: 1
+        },
+        size: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 100
+        }
+      },
+      additionalProperties: true
     },
     response: {
       200: {

@@ -1,4 +1,4 @@
-import cmdAuth from './auth'
+import cmdAuthenticate from './authenticate'
 import cmdAirHumidity from './wAirHumidity'
 import cmdAirTemperature from './wAirTemperature'
 import cmdBattery from './wBattery'
@@ -7,7 +7,7 @@ import cmdSoilMoisture from './wSoilMoisture'
 import cmdSoilTemperature from './wSoilTemperature'
 
 export default [
-  cmdAuth,
+  cmdAuthenticate,
   cmdAirHumidity,
   cmdAirTemperature,
   cmdBattery,

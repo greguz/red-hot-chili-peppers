@@ -6,7 +6,8 @@ function buildQueryStringHook() {
     blacklist: {
       page: 1,
       size: 1,
-      fields: 1
+      fields: 1,
+      sort: 1
     }
   })
 

@@ -61,9 +61,6 @@ export default {
           type: 'integer',
           minimum: 1,
           maximum: 100
-        },
-        fields: {
-          type: 'string'
         }
       },
       additionalProperties: true
