@@ -33,7 +33,7 @@ app.register(noFavicon)
 app.register(mongodb, {
   forceClose: true,
   url: process.env.MONGO_URI,
-  database: process.env.MONGO_DB
+  database: process.env.MONGO_DATABASE
 })
 
 app.register(db)
