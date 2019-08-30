@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 
 import { AuthorizationLevel } from '../../libs/enums'
+import { ConflictError } from '../../libs/errors'
 
 import deviceSchema from './schema'
 
@@ -42,7 +43,7 @@ async function handler(request, reply) {
 
   const client = findClient(this.ws, greetCode)
   if (!client) {
-    throw new Error('Device not found')
+    throw new ConflictError('Device not found')
   }
 
   // Generate random 256bit auth token
