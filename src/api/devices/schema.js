@@ -36,6 +36,5 @@ export default {
         }
       }
     }
-  },
-  required: ['_id', 'mac', 'heartbeat', 'readings']
+  }
 }
