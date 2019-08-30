@@ -119,7 +119,7 @@ async function onRequestHook(request, reply) {
   }
 }
 
-function plugin(fastify, options, callback) {
+function plugin(fastify, _options, callback) {
   fastify.decorate('session', {
     hashPassword,
     comparePassword,

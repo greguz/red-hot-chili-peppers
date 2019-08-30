@@ -1,6 +1,6 @@
 import makePlugin from 'fastify-plugin'
 
-function plugin(fastify, options, callback) {
+function plugin(fastify, _options, callback) {
   const { db } = fastify.mongo
   if (!db) {
     throw new Error('Database instance is missing')
