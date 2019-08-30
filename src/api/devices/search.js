@@ -1,5 +1,3 @@
-import MongoQS from 'mongo-querystring'
-
 import { AuthorizationLevel } from '../../libs/enums'
 
 import deviceSchema from './schema'
@@ -11,17 +9,8 @@ async function handler(request, reply) {
   const size = request.query.size || 50
   const fields = request.query.fields ? request.query.fields.split(',') : []
 
-  // TODO: move away
-  const qs = new MongoQS({
-    blacklist: {
-      page: 1,
-      size: 1,
-      fields: 1
-    }
-  })
-
   const query = {
-    $and: [{ userId: request.userId }, qs.parse(request.query)]
+    $and: [{ userId: request.userId }, request.generateMongoQuery()]
   }
 
   const options = {

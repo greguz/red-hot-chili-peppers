@@ -1,4 +1,22 @@
 import makePlugin from 'fastify-plugin'
+import MongoQS from 'mongo-querystring'
+
+function buildQueryStringHook() {
+  const qs = new MongoQS({
+    blacklist: {
+      page: 1,
+      size: 1,
+      fields: 1
+    }
+  })
+
+  return (request, _reply, callback) => {
+    request.generateMongoQuery = query => {
+      return qs.parse(query || request.query)
+    }
+    callback()
+  }
+}
 
 function plugin(fastify, _options, callback) {
   const { db } = fastify.mongo
@@ -12,6 +30,9 @@ function plugin(fastify, _options, callback) {
     devices: db.collection('devices'),
     users: db.collection('users')
   })
+
+  fastify.decorateRequest('generateMongoQuery', null)
+  fastify.addHook('preHandler', buildQueryStringHook())
 
   callback()
 }
