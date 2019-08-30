@@ -1,4 +1,4 @@
-import { sendMessage } from '../telegram'
+import { sendMessage } from '../../libs/telegram'
 
 async function handler(socket, packet) {
   const { ObjectId } = this.mongo
