@@ -5,28 +5,40 @@ import deviceSchema from './schema'
 
 async function handler(request, reply) {
   const { ObjectId } = this.mongo
-  const device = await this.db.devices.findOne({
-    _id: new ObjectId(request.params.id),
-    userId: request.userId,
-    _deleted: {
-      $exists: false
+
+  const { value } = await this.db.devices.findOneAndUpdate(
+    {
+      _id: new ObjectId(request.params.id),
+      userId: request.userId,
+      _deleted: {
+        $exists: false
+      }
+    },
+    {
+      $set: {
+        _deleted: new Date()
+      },
+      $unset: {
+        token: ''
+      }
     }
-  })
-  if (!device) {
+  )
+  if (!value) {
     throw new NotFoundError('Device not found')
   }
-  reply.send(device)
+
+  reply.status(200).send(value)
 }
 
 export default {
-  method: 'GET',
+  method: 'DELETE',
   url: '/:id',
   handler,
   config: {
     authorizationLevel: AuthorizationLevel.USER
   },
   schema: {
-    description: 'Read device info and status',
+    description: 'Delete device',
     tags: ['device'],
     params: {
       type: 'object',

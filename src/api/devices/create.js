@@ -46,25 +46,51 @@ async function handler(request, reply) {
     throw new ConflictError('Device not found')
   }
 
-  // Generate random 256bit auth token
   const token = crypto.randomBytes(32)
 
-  // Send bind command
   client.send(createPacket(client.mac, greetCode, token))
 
-  // Create device inside DB
-  const { insertedId } = await this.db.devices.insertOne({
-    userId: request.userId,
-    mac: client.mac,
-    token: token.toString('hex'),
-    name: request.body.name || client.mac.toUpperCase(),
-    heartbeat: new Date()
-  })
+  let device
 
-  // Authenticate socket as device
-  client.deviceId = insertedId.toHexString()
+  const updateResult = await this.db.devices.findOneAndUpdate(
+    {
+      mac: client.mac,
+      userId: request.userId,
+      _deleted: {
+        $exists: true
+      }
+    },
+    {
+      $set: {
+        token: token.toString('hex'),
+        name: request.body.name || client.mac.toUpperCase(),
+        heartbeat: new Date()
+      },
+      $unset: {
+        _deleted: ''
+      }
+    },
+    {
+      returnOriginal: false
+    }
+  )
 
-  reply.status(201).send({ _id: insertedId })
+  if (!updateResult.value) {
+    const insertResult = await this.db.devices.insertOne({
+      userId: request.userId,
+      mac: client.mac,
+      token: token.toString('hex'),
+      name: request.body.name || client.mac.toUpperCase(),
+      heartbeat: new Date()
+    })
+    device = insertResult.ops[0]
+  } else {
+    device = updateResult.value
+  }
+
+  client.deviceId = device._id.toHexString()
+
+  reply.status(201).send(device)
 }
 
 export default {

@@ -10,7 +10,15 @@ async function handler(request, reply) {
   const fields = request.query.fields ? request.query.fields.split(',') : []
 
   const query = {
-    $and: [{ userId: request.userId }, request.generateMongoQuery()]
+    $and: [
+      {
+        userId: request.userId,
+        _deleted: {
+          $exists: false
+        }
+      },
+      request.generateMongoQuery()
+    ]
   }
 
   const options = {
