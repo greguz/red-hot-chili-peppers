@@ -6,6 +6,8 @@ function plugin(fastify, options, callback) {
     throw new Error('Database instance is missing')
   }
 
+  db.on('error', err => fastify.log.error(err))
+
   fastify.decorate('db', {
     devices: db.collection('devices'),
     users: db.collection('users')
