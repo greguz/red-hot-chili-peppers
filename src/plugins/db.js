@@ -28,7 +28,8 @@ function plugin(fastify, _options, callback) {
 
   fastify.decorate('db', {
     devices: db.collection('devices'),
-    users: db.collection('users')
+    users: db.collection('users'),
+    readings: db.collection('readings')
   })
 
   fastify.decorateRequest('generateMongoQuery', null)

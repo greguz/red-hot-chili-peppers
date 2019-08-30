@@ -1,8 +1,17 @@
 import cmdAuth from './auth'
-import cmdSensors from './sensors'
+import cmdAirHumidity from './wAirHumidity'
+import cmdAirTemperature from './wAirTemperature'
+import cmdBattery from './wBattery'
+import cmdLight from './wLight'
+import cmdSoilMoisture from './wSoilMoisture'
+import cmdSoilTemperature from './wSoilTemperature'
 
 export default [
-  // Add more commands here
   cmdAuth,
-  cmdSensors
+  cmdAirHumidity,
+  cmdAirTemperature,
+  cmdBattery,
+  cmdLight,
+  cmdSoilMoisture,
+  cmdSoilTemperature
 ]

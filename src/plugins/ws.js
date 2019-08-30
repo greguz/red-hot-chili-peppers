@@ -5,14 +5,6 @@ function compileSignature(request) {
   return request.method + '_' + request.url
 }
 
-function startTimer() {
-  const start = new Date()
-  return function endTimer() {
-    const end = new Date()
-    return end.getTime() - start.getTime()
-  }
-}
-
 function plugin(fastify, _options, callback) {
   let connectionsCounter = 1
   let keepAliveInterval
@@ -38,10 +30,10 @@ function plugin(fastify, _options, callback) {
     route => (routes[compileSignature(route)] = route)
   )
 
-  async function dispatch(request, client, message) {
+  function dispatch(client, request) {
     const route = routes[compileSignature(request)]
     if (route) {
-      await route.handler.call(fastify, client, message)
+      route.handler.call(fastify, client, request)
     }
   }
 
@@ -53,7 +45,6 @@ function plugin(fastify, _options, callback) {
     keepAliveInterval = setInterval(() => {
       for (const client of wss.clients) {
         if (!client.isAlive) {
-          client.log.info('websocket disconnected')
           client.terminate()
         } else {
           client.isAlive = false
@@ -80,21 +71,20 @@ function plugin(fastify, _options, callback) {
 
       client.on('error', err => client.log.error(err))
 
+      client.on('close', (code, reason) =>
+        client.log.info({
+          close: {
+            code,
+            reason
+          },
+          msg: 'connection closed'
+        })
+      )
+
       client.isAlive = true
       client.on('pong', () => (client.isAlive = true))
 
-      client.on('message', message => {
-        const timer = startTimer()
-
-        dispatch(request, client, message)
-          .catch(err => client.log.error(err))
-          .then(() =>
-            client.log.info({
-              handleTime: timer(),
-              msg: 'message handled'
-            })
-          )
-      })
+      dispatch(client, request)
     })
   })
 

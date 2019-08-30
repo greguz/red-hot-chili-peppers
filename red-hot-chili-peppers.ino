@@ -236,6 +236,15 @@ uint8_t readSoilMoisture() {
 /**
  *
  */
+void writeSoilMoisture() {
+  uint8_t vSoilMoisture = readSoilMoisture();
+  byte payload[6] = { 0x5a, 0xa5, 0x01, 0x75, 1, vSoilMoisture };
+  socket.sendBIN(payload, 6);
+}
+
+/**
+ *
+ */
 int8_t readSoilTemperature() {
   return 18;
 }
@@ -244,27 +253,29 @@ int8_t readSoilTemperature() {
  * Device routine
  */
 void routine() {
-  uint8_t vBattery = readBattery();
-  uint32_t vLight = readLight();
-  uint8_t  vAirHumidity = readAirHumidity();
-  int8_t vAirTemperature = readAirTemperature();
-  uint8_t  vSoilMoisture = readSoilMoisture();
-  int8_t vSoilTemperature = readSoilTemperature();
+  // uint8_t vBattery = readBattery();
+  // uint32_t vLight = readLight();
+  // uint8_t vAirHumidity = readAirHumidity();
+  // int8_t vAirTemperature = readAirTemperature();
+  // uint8_t vSoilMoisture = readSoilMoisture();
+  // int8_t vSoilTemperature = readSoilTemperature();
 
-  byte payload[14] = { 0x5a, 0xa5, 0x01, 0x70, 9 };
-  payload[5] = vBattery;
-  payload[6] = vLight >> 24; // BE
-  payload[7] = vLight >> 16;
-  payload[8] = vLight >> 8;
-  payload[9] = vLight >> 0;
-  payload[10] = vAirHumidity;
-  payload[11] = vAirTemperature;
-  payload[12] = vSoilMoisture;
-  payload[13] = vSoilTemperature;
+  // byte payload[14] = { 0x5a, 0xa5, 0x01, 0x70, 9 };
+  // payload[5] = vBattery;
+  // payload[6] = vLight >> 24; // BE
+  // payload[7] = vLight >> 16;
+  // payload[8] = vLight >> 8;
+  // payload[9] = vLight >> 0;
+  // payload[10] = vAirHumidity;
+  // payload[11] = vAirTemperature;
+  // payload[12] = vSoilMoisture;
+  // payload[13] = vSoilTemperature;
 
-  socket.sendBIN(payload, 14);
+  // socket.sendBIN(payload, 14);
 
-  // Deep sleep mode
+  // TODO: other sensors
+  writeSoilMoisture();
+
   Serial.println("Good night");
   ESP.deepSleep(SLEEP_TIME);
 }

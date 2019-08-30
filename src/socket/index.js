@@ -8,6 +8,10 @@ import {
 
 import commands from './commands'
 
+function isNil(value) {
+  return value === null || value === undefined
+}
+
 function parsePacket(data) {
   // Ensure buffer type
   if (!Buffer.isBuffer(data)) {
@@ -42,8 +46,8 @@ function parsePacket(data) {
   }
 }
 
-async function handler(socket, data) {
-  const packet = parsePacket(data)
+async function messageHandler(client, message) {
+  const packet = parsePacket(message)
   const command = commands.find(item => item.command === packet.command)
   if (!command) {
     throw new NotFoundError('Unknown command')
@@ -54,17 +58,73 @@ async function handler(socket, data) {
   ) {
     throw new BadRequestError('Invalid command length')
   }
-  if (command.authenticated === true && !socket.deviceId) {
+  if (command.authenticated === true && !client.deviceId) {
     throw new UnauthorizedError()
   }
-  await command.handler.call(this, socket, packet)
+  await command.handler.call(this, client, packet)
 }
 
-function plugin(fastify, options, callback) {
+async function sendTelegramNotification(socket) {
+  const { ObjectId } = this.mongo
+
+  const device = await this.db.devices.findOne(
+    { _id: new ObjectId(socket.deviceId) },
+    {
+      projection: {
+        readings: 1
+      }
+    }
+  )
+
+  const rows = []
+  if (device && device.readings) {
+    const { readings } = device
+    if (!isNil(readings.battery)) {
+      rows.push(`Battery: ${readings.battery}%`)
+    }
+    if (!isNil(readings.light)) {
+      rows.push(`Light: ${readings.light}lx`)
+    }
+    if (!isNil(readings.airHumidity)) {
+      rows.push(`Air humidity: ${readings.airHumidity}%`)
+    }
+    if (!isNil(readings.airTemperature)) {
+      rows.push(`Air temperature: ${readings.airTemperature}°C`)
+    }
+    if (!isNil(readings.soilMoisture)) {
+      rows.push(`Soil moisture: ${readings.soilMoisture}%`)
+    }
+    if (!isNil(readings.soilTemperature)) {
+      rows.push(`Soil temperature: ${readings.soilTemperature}°C`)
+    }
+  }
+
+  if (rows.length > 0) {
+    await this.telegram.sendMessage(process.env.TELEGRAM_CHAT, rows.join('\n'))
+  }
+}
+
+async function connectionHandler(client) {
+  client.on('message', message => {
+    messageHandler
+      .call(this, client, message)
+      .catch(err => client.log.error(err))
+  })
+
+  if (this.hasDecorator('telegram') && process.env.TELEGRAM_CHAT) {
+    client.on('close', () => {
+      sendTelegramNotification
+        .call(this, client)
+        .catch(err => client.log.error(err))
+    })
+  }
+}
+
+function plugin(fastify, _options, callback) {
   fastify.wsRoute({
     method: 'GET',
     url: '/device',
-    handler
+    handler: connectionHandler
   })
 
   callback()
