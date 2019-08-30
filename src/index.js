@@ -17,7 +17,9 @@ import socket from './socket'
 
 const app = fastify({
   ignoreTrailingSlash: true,
-  logger: true
+  logger: {
+    level: process.env.LOG_LEVEL || 'info'
+  }
 })
 
 app.register(errors)

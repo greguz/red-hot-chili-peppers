@@ -52,9 +52,13 @@ async function handler(socket, packet) {
   socket.greetCode = greetCode
   socket.deviceId = await readDeviceId(this.db, mac, token)
 
-  console.log(mac)
-  console.log(greetCode)
-  console.log(socket.deviceId)
+  socket.log.info({
+    device: {
+      mac,
+      greetCode
+    },
+    msg: socket.deviceId ? 'device authenticated' : 'device ready'
+  })
 
   if (socket.deviceId) {
     socket.send(Buffer.from([0x5a, 0xa5, 0x01, 0xa1, 0x00]))
