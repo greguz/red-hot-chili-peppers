@@ -11,7 +11,8 @@ export default {
       type: 'string'
     },
     heartbeat: {
-      type: 'string'
+      type: 'string',
+      format: 'date-time'
     },
     readings: {
       type: 'object',
@@ -35,6 +36,14 @@ export default {
           type: 'number' // °C
         }
       }
+    },
+    _created: {
+      type: 'string',
+      format: 'date-time'
+    },
+    _updated: {
+      type: 'string',
+      format: 'date-time'
     }
   }
 }
