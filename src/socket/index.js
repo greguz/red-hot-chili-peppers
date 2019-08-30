@@ -63,7 +63,7 @@ async function handler(socket, data) {
 function plugin(fastify, options, callback) {
   fastify.wsRoute({
     method: 'GET',
-    url: '/',
+    url: '/device',
     handler
   })
 

@@ -30,7 +30,7 @@
 // Socket server config
 #define SRV_HOST "renovo"
 #define SRV_PORT 8008
-#define SRV_URL "/"
+#define SRV_URL "/device"
 #define SRV_RECONNECTION 5000 // ms
 
 // AP config
