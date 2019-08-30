@@ -9,6 +9,7 @@ import swagger from 'fastify-swagger'
 
 import db from './plugins/db'
 import errors from './plugins/errors'
+import pagination from './plugins/pagination'
 import session from './plugins/session'
 import telegram from './plugins/telegram'
 import ws from './plugins/ws'
@@ -22,6 +23,8 @@ const app = fastify({
     level: process.env.LOG_LEVEL || 'info'
   }
 })
+
+app.register(pagination)
 
 app.register(swagger, {
   swagger: {

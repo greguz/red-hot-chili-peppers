@@ -4,28 +4,14 @@ import deviceSchema from './schema'
 
 async function handler(request, reply) {
   const collection = this.db.devices
+  const { query, page, size, options } = request.paginate()
 
-  const page = request.query.page || 1
-  const size = request.query.size || 50
-  const fields = request.query.fields ? request.query.fields.split(',') : []
-
-  const query = {
-    $and: [
-      {
-        userId: request.userId,
-        _deleted: {
-          $exists: false
-        }
-      },
-      request.generateMongoQuery()
-    ]
-  }
-
-  const options = {
-    limit: size,
-    skip: size * (page - 1),
-    projection: fields.reduce((acc, field) => ({ ...acc, [field]: 1 }), {})
-  }
+  Object.assign(query, {
+    userId: request.userId,
+    _deleted: {
+      $exists: false
+    }
+  })
 
   const [count, items] = await Promise.all([
     collection.countDocuments(query),
