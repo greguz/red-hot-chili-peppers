@@ -1,6 +1,8 @@
+import makePlugin from 'fastify-plugin'
+
 import ServerError from '../libs/errors'
 
-export default function errorHandler(error, request, reply) {
+function errorHandler(error, request, reply) {
   const statusCode = error.statusCode || 500
 
   if (statusCode >= 400 && statusCode < 500) {
@@ -20,3 +22,13 @@ export default function errorHandler(error, request, reply) {
 
   reply.status(statusCode).send(body)
 }
+
+function plugin(fastify, _options, callback) {
+  fastify.setErrorHandler(errorHandler)
+  callback()
+}
+
+export default makePlugin(plugin, {
+  fastify: '^2.0.0',
+  name: 'errors'
+})
