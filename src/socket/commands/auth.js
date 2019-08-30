@@ -22,7 +22,7 @@ function readToken(buffer, offset) {
   return buffer.subarray(offset, offset + 32).toString('hex')
 }
 
-async function readDeviceId(db, mac, token) {
+async function readDevice(db, mac, token) {
   const { value } = await db.devices.findOneAndUpdate(
     {
       mac,
@@ -35,22 +35,24 @@ async function readDeviceId(db, mac, token) {
     },
     {
       projection: {
-        _id: 1
+        _id: 1,
+        userId: 1
       }
     }
   )
-
-  return value ? value._id.toHexString() : null
+  return value
 }
 
 async function handler(socket, packet) {
   const mac = readMAC(packet.body, 0)
   const greetCode = readGreetCode(packet.body, 6)
   const token = readToken(packet.body, 8)
+  const device = await readDevice(this.db, mac, token)
 
   socket.mac = mac
   socket.greetCode = greetCode
-  socket.deviceId = await readDeviceId(this.db, mac, token)
+  socket.deviceId = device ? device._id.toHexString() : null
+  socket.userId = device ? device.userId : null
 
   socket.log.info({
     device: {
