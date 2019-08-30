@@ -1,5 +1,3 @@
-import { sendMessage } from '../../libs/telegram'
-
 async function handler(socket, packet) {
   const { ObjectId } = this.mongo
 
@@ -33,7 +31,11 @@ async function handler(socket, packet) {
     `\nSoil moisture: ${soilMoisture} %` +
     `\nSoil temperature: ${soilTemperature} °C`
 
-  await sendMessage(text)
+  if (this.hasDecorator('telegram') && process.env.TELEGRAM_CHAT) {
+    await this.telegram.sendMessage(process.env.TELEGRAM_CHAT, text)
+  } else {
+    socket.log.trace(text)
+  }
 }
 
 export default {

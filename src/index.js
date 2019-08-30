@@ -10,6 +10,7 @@ import swagger from 'fastify-swagger'
 import db from './plugins/db'
 import errors from './plugins/errors'
 import session from './plugins/session'
+import telegram from './plugins/telegram'
 import ws from './plugins/ws'
 
 import api from './api'
@@ -36,6 +37,8 @@ app.register(swagger, {
   },
   exposeRoute: true
 })
+
+app.register(telegram)
 
 app.register(errors)
 
