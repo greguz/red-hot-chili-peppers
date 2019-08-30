@@ -18,6 +18,14 @@ function plugin(fastify, _options, callback) {
 
   fastify.decorate('ws', wss)
 
+  wss.findClient = predicate => {
+    for (const client of wss.clients) {
+      if (predicate(client) === true) {
+        return client
+      }
+    }
+  }
+
   fastify.addHook('onClose', (_fastify, done) => {
     clearInterval(keepAliveInterval)
     wss.close(done)

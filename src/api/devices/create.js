@@ -28,67 +28,64 @@ function createPacket(mac, greetCode, token) {
   return buffer
 }
 
-function findClient(server, greetCode) {
-  let result = null
-  server.clients.forEach(client => {
-    if (!client.deviceId && client.greetCode === greetCode) {
-      result = client
-    }
-  })
-  return result
-}
-
-async function handler(request, reply) {
-  const greetCode = request.body.code
-
-  const client = findClient(this.ws, greetCode)
-  if (!client) {
-    throw new ConflictError('Device not found')
-  }
-
-  const token = crypto.randomBytes(32)
-
-  client.send(createPacket(client.mac, greetCode, token))
-
-  let device
-
-  const updateResult = await this.db.devices.findOneAndUpdate(
+async function createDevice(collection, userId, mac, token, name) {
+  const heartbeat = new Date()
+  const updateResult = await collection.findOneAndUpdate(
     {
-      mac: client.mac,
-      userId: request.userId,
+      mac,
+      userId,
       _deleted: {
         $exists: true
       }
     },
     {
       $set: {
-        token: token.toString('hex'),
-        name: request.body.name || client.mac.toUpperCase(),
-        heartbeat: new Date()
+        token,
+        name,
+        heartbeat
       },
       $unset: {
         _deleted: ''
       }
     },
-    {
-      returnOriginal: false
-    }
+    { returnOriginal: false }
   )
+  if (updateResult.value) {
+    return updateResult.value
+  }
+  const insertResult = await collection.insertOne({
+    userId,
+    mac,
+    token,
+    name,
+    heartbeat
+  })
+  return insertResult.ops[0]
+}
 
-  if (!updateResult.value) {
-    const insertResult = await this.db.devices.insertOne({
-      userId: request.userId,
-      mac: client.mac,
-      token: token.toString('hex'),
-      name: request.body.name || client.mac.toUpperCase(),
-      heartbeat: new Date()
-    })
-    device = insertResult.ops[0]
-  } else {
-    device = updateResult.value
+async function handler(request, reply) {
+  const greetCode = request.body.code
+
+  const socketClient = this.ws.findClient(
+    item => !item.deviceId && item.greetCode === greetCode
+  )
+  if (!socketClient) {
+    throw new ConflictError('Device not found')
   }
 
-  client.deviceId = device._id.toHexString()
+  const token = crypto.randomBytes(32)
+
+  const device = await createDevice(
+    this.db.devices,
+    request.userId,
+    socketClient.mac,
+    token.toString('hex'),
+    request.body.name || socketClient.mac.toUpperCase()
+  )
+
+  socketClient.send(createPacket(socketClient.mac, greetCode, token))
+
+  socketClient.deviceId = device._id.toHexString()
 
   reply.status(201).send(device)
 }

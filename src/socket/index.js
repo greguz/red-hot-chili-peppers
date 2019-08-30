@@ -77,8 +77,9 @@ async function sendTelegramNotification(socket) {
   )
 
   const rows = []
-  if (device && device.readings) {
-    const { readings } = device
+  if (device) {
+    const readings = device.readings || {}
+
     if (!isNil(readings.battery)) {
       rows.push(`Battery: ${readings.battery}%`)
     }
