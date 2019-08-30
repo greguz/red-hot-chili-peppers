@@ -24,5 +24,9 @@ export default {
   handler,
   config: {
     authenticated: true
+  },
+  schema: {
+    description: 'Invalidate current authentication token',
+    tags: ['auth']
   }
 }

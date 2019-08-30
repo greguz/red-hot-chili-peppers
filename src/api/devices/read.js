@@ -23,6 +23,8 @@ export default {
     authorizationLevel: AuthorizationLevel.USER
   },
   schema: {
+    description: 'Read device info and status',
+    tags: ['device'],
     params: {
       type: 'object',
       properties: {

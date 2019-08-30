@@ -51,6 +51,8 @@ export default {
     authorizationLevel: AuthorizationLevel.USER
   },
   schema: {
+    description: 'Search user devices',
+    tags: ['device'],
     querystring: {
       type: 'object',
       properties: {

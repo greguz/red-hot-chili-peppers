@@ -6,6 +6,7 @@ import mongodb from 'fastify-mongodb'
 import noAdditionalProperties from 'fastify-no-additional-properties'
 import noFavicon from 'fastify-no-icon'
 import cookies from 'fastify-cookie'
+import swagger from 'fastify-swagger'
 
 import db from './plugins/db'
 import errors from './plugins/errors'
@@ -20,6 +21,21 @@ const app = fastify({
   logger: {
     level: process.env.LOG_LEVEL || 'info'
   }
+})
+
+app.register(swagger, {
+  swagger: {
+    info: {
+      title: 'Red Hot Chili Peppers',
+      description: 'An overcomplicated method to grow some chili peppers',
+      version: '0.1.0'
+    },
+    host: 'localhost',
+    schemes: ['http'],
+    consumes: ['application/json'],
+    produces: ['application/json']
+  },
+  exposeRoute: true
 })
 
 app.register(errors)

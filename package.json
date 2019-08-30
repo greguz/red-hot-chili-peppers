@@ -24,6 +24,7 @@
     "fastify-no-additional-properties": "^1.0.0",
     "fastify-no-icon": "^3.0.0",
     "fastify-plugin": "^1.6.0",
+    "fastify-swagger": "^2.4.0",
     "jsonwebtoken": "^8.5.1",
     "make-promises-safe": "^5.0.0",
     "mongo-querystring": "^4.1.1",

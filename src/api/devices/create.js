@@ -75,6 +75,8 @@ export default {
     authorizationLevel: AuthorizationLevel.USER
   },
   schema: {
+    description: 'Pair new device',
+    tags: ['device'],
     body: {
       type: 'object',
       properties: {

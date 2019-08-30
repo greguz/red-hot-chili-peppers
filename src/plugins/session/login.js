@@ -49,6 +49,8 @@ export default {
   url: '/api/login',
   handler,
   schema: {
+    description: 'Authenticate user and create a new authentication token',
+    tags: ['auth'],
     body: {
       type: 'object',
       properties: {

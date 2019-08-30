@@ -32,15 +32,19 @@ export default {
     authenticated: true
   },
   schema: {
+    description: "Change current user's password",
+    tags: ['auth'],
     body: {
       type: 'object',
       properties: {
         oldPassword: {
-          type: 'string'
+          type: 'string',
+          description: 'Current user password'
         },
         newPassword: {
           type: 'string',
-          minLength: 8
+          minLength: 8,
+          description: 'New password'
         }
       },
       required: ['oldPassword', 'newPassword']
