@@ -21,7 +21,7 @@ async function handler(request, reply) {
   })
 
   const query = {
-    $and: [{ userId: '5d29eba70bbe38516bcf3784' }, qs.parse(request.query)]
+    $and: [{ userId: request.userId }, qs.parse(request.query)]
   }
 
   const options = {
