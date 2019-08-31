@@ -21,7 +21,7 @@ async function handler(request, reply) {
     throw new BadRequestError('Invalid credentials')
   }
 
-  const token = await this.session.signToken(user._id.toHexString())
+  const token = await this.session.signToken({ _id: user._id.toHexString() })
 
   await this.db.users.updateOne(
     { _id: user._id },

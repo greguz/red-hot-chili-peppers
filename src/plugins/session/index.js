@@ -40,7 +40,7 @@ function comparePassword(password, hash) {
 function signToken(payload) {
   return new Promise((resolve, reject) => {
     const options = {
-      // TODO
+      expiresIn: '1y'
     }
     jwt.sign(payload, jwtSecret, options, (err, token) => {
       if (err) {
@@ -82,8 +82,11 @@ async function onRequestHook(request, reply) {
 
   if (request.authenticationToken) {
     try {
-      const userId = await this.session.verifyToken(request.authenticationToken)
-      if (userId) {
+      const payload = await this.session.verifyToken(
+        request.authenticationToken
+      )
+      if (ObjectId.isValid(payload._id)) {
+        const userId = payload._id
         const user = await this.db.users.findOne(
           {
             _id: new ObjectId(userId),
@@ -102,7 +105,7 @@ async function onRequestHook(request, reply) {
         }
       }
     } catch (err) {
-      request.logger.warn(err)
+      request.log.warn(err)
     }
   }
 
