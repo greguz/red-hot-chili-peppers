@@ -53,7 +53,7 @@ app.register(helmet, {
 
 app.register(mongodb, {
   forceClose: true,
-  url: process.env.MONGO_URI,
+  url: process.env.MONGO_URL,
   database: process.env.MONGO_DATABASE
 })
 

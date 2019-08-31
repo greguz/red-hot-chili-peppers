@@ -15,7 +15,7 @@ An overcomplicated method to grow some chili peppers
 
 You have to provide some env variables:
 
-1. **MONGO_URI** - MongoDB connection string
+1. **MONGO_URL** - MongoDB connection string
 2. **MONGO_DATABASE** - Database name to use
 3. TELEGRAM_TOKEN - Telegram bot token (optional)
 4. TELEGRAM_CHAT - Telegram chat ID (optional)
