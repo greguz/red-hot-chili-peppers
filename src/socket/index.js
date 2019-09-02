@@ -1,4 +1,6 @@
 import makePlugin from 'fastify-plugin'
+import isNil from 'lodash/isNil'
+import get from 'lodash/get'
 
 import {
   NotFoundError,
@@ -7,10 +9,6 @@ import {
 } from '../libs/errors'
 
 import commands from './commands'
-
-function isNil(value) {
-  return value === null || value === undefined
-}
 
 function parsePacket(data) {
   // Ensure buffer type
@@ -71,37 +69,40 @@ async function sendTelegramNotification(socket) {
     { _id: new ObjectId(socket.deviceId) },
     {
       projection: {
-        readings: 1
+        readings: 1,
+        'telegram.chatId': 1
       }
     }
   )
 
-  const rows = []
-  if (device) {
-    const readings = device.readings || {}
+  const chatId = get(device, 'telegram.chatId')
+  if (chatId) {
+    const rows = []
+    if (device) {
+      const readings = device.readings || {}
 
-    if (!isNil(readings.battery)) {
-      rows.push(`Battery: ${readings.battery}%`)
+      if (!isNil(readings.battery)) {
+        rows.push(`Battery: ${readings.battery}%`)
+      }
+      if (!isNil(readings.light)) {
+        rows.push(`Light: ${readings.light}lx`)
+      }
+      if (!isNil(readings.airHumidity)) {
+        rows.push(`Air humidity: ${readings.airHumidity}%`)
+      }
+      if (!isNil(readings.airTemperature)) {
+        rows.push(`Air temperature: ${readings.airTemperature}°C`)
+      }
+      if (!isNil(readings.soilMoisture)) {
+        rows.push(`Soil moisture: ${readings.soilMoisture}%`)
+      }
+      if (!isNil(readings.soilTemperature)) {
+        rows.push(`Soil temperature: ${readings.soilTemperature}°C`)
+      }
     }
-    if (!isNil(readings.light)) {
-      rows.push(`Light: ${readings.light}lx`)
+    if (rows.length > 0) {
+      await this.telegram.sendMessage(chatId, rows.join('\n'))
     }
-    if (!isNil(readings.airHumidity)) {
-      rows.push(`Air humidity: ${readings.airHumidity}%`)
-    }
-    if (!isNil(readings.airTemperature)) {
-      rows.push(`Air temperature: ${readings.airTemperature}°C`)
-    }
-    if (!isNil(readings.soilMoisture)) {
-      rows.push(`Soil moisture: ${readings.soilMoisture}%`)
-    }
-    if (!isNil(readings.soilTemperature)) {
-      rows.push(`Soil temperature: ${readings.soilTemperature}°C`)
-    }
-  }
-
-  if (rows.length > 0) {
-    await this.telegram.sendMessage(process.env.TELEGRAM_CHAT, rows.join('\n'))
   }
 }
 
@@ -112,7 +113,7 @@ async function connectionHandler(client) {
       .catch(err => client.log.error(err))
   })
 
-  if (this.hasDecorator('telegram') && process.env.TELEGRAM_CHAT) {
+  if (this.hasDecorator('telegram')) {
     client.on('close', () => {
       sendTelegramNotification
         .call(this, client)

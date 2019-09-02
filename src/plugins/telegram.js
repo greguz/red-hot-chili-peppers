@@ -2,9 +2,8 @@ import makePlugin from 'fastify-plugin'
 import Telegram from 'telegraf/telegram'
 
 function plugin(fastify, _options, callback) {
-  const botToken = process.env.TELEGRAM_TOKEN
-  if (botToken) {
-    fastify.decorate('telegram', new Telegram(botToken))
+  if (process.env.TELEGRAM_TOKEN) {
+    fastify.decorate('telegram', new Telegram(process.env.TELEGRAM_TOKEN))
   }
   callback()
 }

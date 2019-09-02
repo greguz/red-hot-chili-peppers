@@ -24,6 +24,7 @@
     "fastify-plugin": "^1.6.0",
     "fastify-swagger": "^2.4.0",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
     "make-promises-safe": "^5.0.0",
     "mongo-querystring": "^4.1.1",
     "telegraf": "^3.32.0",
