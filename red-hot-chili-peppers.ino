@@ -47,6 +47,9 @@
 #define ADS_ADDR 0x48
 #define ADS_MOISTURE_PIN 0
 
+// 2N2222 base
+#define POWER_PIN 14
+
 // ##########################################################################
 // Globals (in RAM)
 // ##########################################################################
@@ -66,6 +69,20 @@ Adafruit_ADS1115 ads(ADS_ADDR);
 // ##########################################################################
 // Functions
 // ##########################################################################
+
+/**
+ * Apply 3v3 on 2N2222 base (switch on)
+ */
+void powerOn() {
+  digitalWrite(POWER_PIN, HIGH);
+}
+
+/**
+ * Apply 0 on 2N2222 base (switch off)
+ */
+void powerOff() {
+  digitalWrite(POWER_PIN, LOW);
+}
 
 /**
  * Update auth status (RAM)
@@ -277,6 +294,7 @@ void routine() {
   writeSoilMoisture();
 
   Serial.println("Good night");
+  powerOff();
   ESP.deepSleep(SLEEP_TIME);
 }
 
@@ -285,6 +303,9 @@ void routine() {
 // ##########################################################################
 
 void setup() {
+  pinMode(POWER_PIN, OUTPUT);
+  powerOn();
+
   Serial.begin(57600);
   Serial.setDebugOutput(true);
 

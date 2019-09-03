@@ -30,6 +30,7 @@ Then run `npm start`.
 - [ESP8266](https://learn.adafruit.com/adafruit-feather-huzzah-esp8266)
 - [ADS1115](https://learn.adafruit.com/adafruit-4-channel-adc-breakouts)
 - [Capacitive soil moisture sensor](https://wiki.dfrobot.com/Capacitive_Soil_Moisture_Sensor_SKU_SEN0193)
+- 2N2222
 - Other sensors coming soon...
 
 ### Wiring
