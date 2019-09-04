@@ -41,24 +41,12 @@ async function handler(request, reply) {
     throw new NotFoundError('Device not found')
   }
 
-  const { query, page, size, options } = request.paginate()
-
-  Object.assign(query, {
+  const result = await request.paginate(this.db.readings, {
     userId: request.userId,
     deviceId: device._id.toHexString()
   })
 
-  const [count, items] = await Promise.all([
-    this.db.readings.countDocuments(query),
-    this.db.readings.find(query, options).toArray()
-  ])
-
-  reply.status(200).send({
-    page,
-    size,
-    count,
-    items
-  })
+  reply.status(200).send(result)
 }
 
 export default {

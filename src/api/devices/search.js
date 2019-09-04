@@ -3,27 +3,14 @@ import { AuthorizationLevel } from '../../libs/enums'
 import deviceSchema from './schema'
 
 async function handler(request, reply) {
-  const collection = this.db.devices
-  const { query, page, size, options } = request.paginate()
-
-  Object.assign(query, {
+  const result = await request.paginate(this.db.devices, {
     userId: request.userId,
     _deleted: {
       $exists: false
     }
   })
 
-  const [count, items] = await Promise.all([
-    collection.countDocuments(query),
-    collection.find(query, options).toArray()
-  ])
-
-  reply.status(200).send({
-    page,
-    size,
-    count,
-    items
-  })
+  reply.status(200).send(result)
 }
 
 export default {

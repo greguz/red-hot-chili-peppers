@@ -37,20 +37,32 @@ function buildHook() {
   })
 
   return (request, _reply, callback) => {
-    request.paginate = () => {
+    request.paginate = async (collection, security) => {
       const page = request.query.page || 1
       const size = request.query.size || 50
 
+      let query = qs.parse(request.query)
+      if (security) {
+        query = { $and: [query, security] }
+      }
+
+      const options = {
+        limit: size,
+        skip: size * (page - 1),
+        projection: parseProjection(request.query.fields),
+        sort: parseSort(request.query.sort)
+      }
+
+      const [count, items] = await Promise.all([
+        collection.countDocuments(query),
+        collection.find(query, options).toArray()
+      ])
+
       return {
-        query: qs.parse(request.query),
-        options: {
-          limit: size,
-          skip: size * (page - 1),
-          projection: parseProjection(request.query.fields),
-          sort: parseSort(request.query.sort)
-        },
         page,
-        size
+        size,
+        count,
+        items
       }
     }
     callback()
