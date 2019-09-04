@@ -1,10 +1,6 @@
 import makePlugin from 'fastify-plugin'
 import { Server } from 'ws'
 
-function compileSignature(request) {
-  return request.method + '_' + request.url
-}
-
 function plugin(fastify, _options, callback) {
   let connectionsCounter = 1
   let keepAliveInterval
@@ -35,11 +31,11 @@ function plugin(fastify, _options, callback) {
   fastify.decorate(
     'wsRoute',
     // TODO: validate route options
-    route => (routes[compileSignature(route)] = route)
+    route => (routes[route.url] = route)
   )
 
   function dispatch(client, request) {
-    const route = routes[compileSignature(request)]
+    const route = routes[request.url]
     if (route) {
       route.handler.call(fastify, client, request)
     }

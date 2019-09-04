@@ -124,7 +124,6 @@ async function connectionHandler(client) {
 
 function plugin(fastify, _options, callback) {
   fastify.wsRoute({
-    method: 'GET',
     url: '/device',
     handler: connectionHandler
   })
