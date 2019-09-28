@@ -8,8 +8,8 @@
     "hash-password": "node scripts/hash-password.js",
     "lint": "eslint src",
     "test": "npm run lint",
-    "start": "node --require dotenv/config index.js",
-    "watch": "nodemon --require dotenv/config --watch src --ext js --delay 2 index.js"
+    "start": "node --require dotenv/config index.js | pino-pretty -c -t",
+    "watch": "nodemon --require dotenv/config --watch src --ext js --delay 2 index.js | pino-pretty -c -t"
   },
   "author": "Giacomo Gregoletto",
   "license": "MIT",
@@ -43,6 +43,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "husky": "^3.0.5",
     "nodemon": "^1.19.2",
+    "pino-pretty": "^3.2.1",
     "prettier": "^1.18.2"
   }
 }
